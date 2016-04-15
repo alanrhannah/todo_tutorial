@@ -1,13 +1,10 @@
 import argparse
 import json
 import os
+import sys
 
 import settings
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-a', '--add_task', help='some help', nargs='*', type=str)
-parser.add_argument('-d', '--delete_task', nargs=1, type=str)
-parser.add_argument('-t', '--toggle_task', nargs=1, type=str)
 
 def main():
 	if not os.path.exists(settings.JSON_PATH):
@@ -89,6 +86,18 @@ def add_task(task_dict, json_data):
 	json_data['root']['children'].append(task_dict)
 	return json_data
 
+def parse_args(args):
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-a',
+						'--add_task',
+						help='some help',
+						nargs='*',
+						type=str)
+	parser.add_argument('-d', '--delete_task', nargs=1, type=str)
+	parser.add_argument('-t', '--toggle_task', nargs=1, type=str)
+	
+	return parser.parse_args(args)
+
 if __name__ == '__main__':
-	args = parser.parse_args()
+	args = parse_args(sys.argv[1:])
 	main()
