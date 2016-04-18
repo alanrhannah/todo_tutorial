@@ -18,12 +18,35 @@ def main():
 		task_dict = create_task(task_to_add)
 		updated_json_data = add_task(task_dict, json_data)
 		write_json_file(updated_json_data)
+		print_task_list(updated_json_data)
 
 	if args.delete_task:
+		indexes_to_delete = parse_task_indexes(args.delete_task)
+		updated_json_data = delete_task_by_index(indexes_to_delete)
+		write_json_file(updated_json_data)
+		print_task_list(updated_json_data)
 		print args.delete_task
 
 	if args.toggle_task:
 		print args.toggle_task
+
+def delete_task_by_index(indexes_to_delete):
+	json_data = load_json_data_from_file(settings.JSON_PATH)
+
+	for list_of_task_indexes in indexes_to_delete:
+		for index, value in enumerate(list_of_task_indexes):
+			list_of_task_indexes[index] = int(value) - 1
+
+	for index in list_of_task_indexes:
+		del json_data['root']['children'][index]
+
+	return json_data
+
+def parse_task_indexes(arguments):
+	indexes = []
+	for argument in arguments:
+		indexes.append(argument.split('.'))
+	return indexes
 
 def join_input(argument, connector):
 	"""
@@ -83,8 +106,14 @@ def add_task(task_dict, json_data):
 	:param task_string: a string to be added to the json file.
 	:param json_data:   a dictionary of json data 
 	"""
-	json_data['root']['children'].append(task_dict)
+	json_data['root']['children'].insert(0, task_dict)
 	return json_data
+
+def print_task_list(json_data):
+	for index, task in enumerate(json_data['root']['children']):
+		if task['status'] == 'open':
+			print_string = "{} {}".format(index + 1, task['text'])
+			print(print_string)
 
 def parse_args(args):
 	parser = argparse.ArgumentParser()

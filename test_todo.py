@@ -1,6 +1,4 @@
 import json
-import os
-import pytest
 import settings
 from todo import (join_input,
                   parse_args,
@@ -66,15 +64,15 @@ def test_write_json_file(tmpdir):
     # json_path = os.path.join(tmp_dir, settings.JSON_FILE)
     # print json_path
 
-    expected = {"info": "This path is managed by Alan!",
+    expected = json.dumps({"info": "This path is managed by Alan!",
                    "root": {
                      "children": []
                    }
-                }
+                })
 
     content = create_default_json_dict()
     with open(json_path.strpath, 'w+') as json_file:
         json.dump(content, json_file)
 
-    assert json_path.read() == json.dumps(expected)
+    assert json_path.read() == expected
     assert len(tmpdir.listdir()) == 1
